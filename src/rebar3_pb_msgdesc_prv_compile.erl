@@ -27,13 +27,13 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    AppInfos =
+    [AppInfo] =
         case rebar_state:current_app(State) of
             undefined -> rebar_state:project_apps(State);
             AppInfo1 -> [AppInfo1]
         end,
-    rebar_api:info("appinfos length:~w~n~n", [length(AppInfos)]),
-    Opts = dict:to_list(rebar_app_info:opts(AppInfos)),
+    rebar_api:info("appinfos length:~w~n~n", [length(AppInfo)]),
+    Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
     MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
     DescFile = proplists:get_value(desc_file, MsgDescOpts, undefined_file),
     case file:read_file_info(DescFile) of
