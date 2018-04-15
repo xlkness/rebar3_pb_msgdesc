@@ -4,7 +4,7 @@
 
 -define(PROVIDER, clean).
 -define(NAME_SPACE, msgdesc).
--define(DEPS, [app_discovery]).
+-define(DEPS, [{default, app_discovery}]).
 
 %% ===================================================================
 %% Public API
