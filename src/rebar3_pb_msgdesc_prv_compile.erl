@@ -30,7 +30,7 @@ do(State) ->
     AppInfo =
         case rebar_state:current_app(State) of
             undefined -> rebar_state:project_apps(State);
-            AppInfo -> AppInfo
+            AppInfo1 -> AppInfo1
         end,
     Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
     MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
