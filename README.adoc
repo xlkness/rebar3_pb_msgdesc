@@ -18,8 +18,8 @@ Add the plugin to your rebar config:
 Configuration in rebar.config
 
     {msgdesc_opt, [
-        {i, "path/to/desc_file"},
-        {out_put_file, "path/to/xxxx_pb_desc.erl"}
+        {desc_file, "./test.csv"},
+        {out_put_file, "test_pb_desc.erl"}
     ]}.
 
     {provider_hooks, [
