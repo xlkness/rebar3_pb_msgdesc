@@ -23,10 +23,29 @@ Configuration in rebar.config
         {out_file_name, "xxxx_pb_desc"}
     ]}.
 
+### Description file
+Add some protocolbuf descriptions content to a file, format `type_id,type_name,module`, i.e:
+
+    10000,Request,test_proto
+    10001,Response,test_proto
+
 ### Compile
 Then just call your plugin directly in an existing application:
 
     rebar3 msgdesc compile
+
+And you can find an `out_file_name` file in the `out_dir`, the content are as follows:
+
+    msg_type(10000) -> Request;
+    msg_type(10001) -> Response;
+    msg_type(Other) -> {error, msgdesc, msg_type, Other}.
+    msg_code('Request') -> 10000;
+    msg_code('Response') -> 10001;
+    msg_code(Other) -> {error, msgdesc, msg_code, Other).
+    decode_for(10000) -> test_proto;
+    decode_for(10001) -> test_proto;
+    decode_for(Other) -> {error, msgdesc, decode_for, Other).
+
 
 ### Clean
 
