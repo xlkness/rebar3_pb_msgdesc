@@ -52,7 +52,7 @@ format_error(Reason) ->
 
 exec_compile(DescFile, OutputFileName) ->
     {ok, Lines} = file:read_file(DescFile),
-    rebar_api:info("read lines:~p~n~n", [Lines]),
+    rebar_api:debug("msgdesc->read lines:~p~n", [Lines]),
     {ok, Tokens, _} = rebar3_pb_msgdesc_lexer:string(binary_to_list(Lines)),
     {ok, OutputList} = rebar3_pb_msgdesc_parser:parse(Tokens),
     {ok, Fd} = file:open(OutputFileName, [write, binary]),
@@ -67,9 +67,9 @@ exec_compile(DescFile, OutputFileName) ->
     {MsgTypeList, MsgCodeList, DecodeForList} =
         lists:foldl(ExchangeFun, {[], [], []}, OutputList),
 
-    rebar_api:info("MsgTypeList:~p~n~n", [MsgTypeList]),
-    rebar_api:info("MsgCodeList:~p~n~n", [MsgCodeList]),
-    rebar_api:info("DecodeForList:~p~n~n", [DecodeForList]),
+    rebar_api:debug("msgdesc->MsgTypeList:~p~n", [MsgTypeList]),
+    rebar_api:debug("msgdesc->MsgCodeList:~p~n", [MsgCodeList]),
+    rebar_api:debug("msgdesc->DecodeForList:~p~n", [DecodeForList]),
 
     FileModule = filename:basename(OutputFileName, filename:extension(OutputFileName)),
     io:format(Fd, "-module(" ++ FileModule ++ ").\n\n", []),
@@ -97,4 +97,5 @@ exec_compile(DescFile, OutputFileName) ->
     lists:foreach(OutputDecodeForFun, DecodeForList),
     io:format(Fd, "decode_for(Other) -> {error, msgdesc, decode_for, Other}.\n\n", []),
 
+    file:close(Fd),
     ok.

@@ -27,6 +27,17 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
+    [AppInfo] =
+    case rebar_state:current_app(State) of
+        undefined -> rebar_state:project_apps(State);
+        AppInfo1 -> [AppInfo1]
+    end,
+    Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
+    MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
+    case proplists:get_value(out_put_file, MsgDescOpts, []) of
+        [] -> skip;
+        OutputFileName -> file:delete(OutputFileName)
+    end,
     {ok, State}.
 
 -spec format_error(any()) ->  iolist().
