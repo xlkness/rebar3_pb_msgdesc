@@ -65,6 +65,11 @@ exec_compile(DescFile, OutputFileName) ->
         end,
     {MsgTypeList, MsgCodeList, DecodeForList} =
         lists:foldl(ExchangeFun, {[], [], []}, OutputList),
+
+    rebar_api:info("MsgTypeList:~p~n~n", [MsgTypeList]),
+    rebar_api:info("MsgCodeList:~p~n~n", [MsgCodeList]),
+    rebar_api:info("DecodeForList:~p~n~n", [DecodeForList]),
+
     FileModule = filename:basename(OutputFileName, filename:extension(OutputFileName)),
     io:format(Fd, "-module(" ++ FileModule ++ ")."),
     io:format(Fd, "-export([msg_type/1])."),
