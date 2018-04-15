@@ -35,7 +35,6 @@ do(State) ->
     Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
     MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
     DescFile = proplists:get_value(desc_file, MsgDescOpts, undefined_file),
-    rebar_api:info("msgopt:~w, descfile:~p~n~n", [MsgDescOpts, DescFile]),
     case file:read_file_info(DescFile) of
         {ok, _} ->
             DefaultOutputName = filename:basename(DescFile, filename:extension(DescFile))
@@ -53,6 +52,7 @@ format_error(Reason) ->
 
 exec_compile(DescFile, OutputFileName) ->
     {ok, Lines} = file:read_file(DescFile),
+    rebar_api:info("read lines:~p~n~n", [Lines]),
     {ok, Tokens, _} = rebar3_pb_msgdesc_lexer:string(binary_to_list(Lines)),
     {ok, OutputList} = rebar3_pb_msgdesc_parser:parse(Tokens),
     {ok, Fd} = file:open(OutputFileName, [write, binary]),
