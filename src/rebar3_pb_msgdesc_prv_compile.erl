@@ -35,6 +35,7 @@ do(State) ->
     Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
     MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
     DescFile = proplists:get_value(desc_file, MsgDescOpts, undefined_file),
+    rebar_api:info("msgopt:~w, descfile:~p~n~n", [MsgDescOpts, DescFile]),
     case file:read_file_info(DescFile) of
         {ok, _} ->
             DefaultOutputName = filename:basename(DescFile, filename:extension(DescFile))
