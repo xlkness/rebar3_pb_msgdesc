@@ -32,7 +32,7 @@ do(State) ->
             undefined -> rebar_state:project_apps(State);
             AppInfo1 -> [AppInfo1]
         end,
-    rebar_api:info("appinfos length:~w~n~n", [length(AppInfos)],)
+    rebar_api:info("appinfos length:~w~n~n", [length(AppInfos)]),
     Opts = dict:to_list(rebar_app_info:opts(AppInfos)),
     MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
     DescFile = proplists:get_value(desc_file, MsgDescOpts, undefined_file),
