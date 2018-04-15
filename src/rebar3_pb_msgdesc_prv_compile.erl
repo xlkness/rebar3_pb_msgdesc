@@ -36,16 +36,16 @@ do(State) ->
 
     [begin
          Opts = rebar_app_info:opts(AppInfo),
-         Opts1 = dict:to_list(Opts),
-         rebar_api:info("Opts:~p~n~n", [Opts1])
-%%         SourceDir = filename:join(rebar_app_info:dir(AppInfo), "exc_files"),
-%%         FoundFiles = rebar_utils:find_files(SourceDir, ".*\\.exc\$"),
-%%
-%%         CompileFun = fun(Source, Opts1) ->
-%%             exc_compile(Opts1, Source, OutDir)
-%%                      end,
+         SourceDir = filename:join(rebar_app_info:dir(AppInfo), "exc_files"),
+         FoundFiles = rebar_utils:find_files(SourceDir, ".*\\.exc\$"),
+         rebar_api:info("SourceDir:~p~n~n", [SourceDir]),
+         rebar_api:info("FoundFiles:~p~n~n", [FoundFiles]),
+         CompileFun = fun(_Source, Opts1) ->
+             rebar_api:info("_Source:~p~n~n", [_Source]),
+             exc_compile(Opts1)
+                      end,
 
-%%         rebar_base_compiler:run(Opts, [], FoundFiles, CompileFun)
+         rebar_base_compiler:run(Opts, [], FoundFiles, CompileFun)
      end || AppInfo <- Apps],
 
 
@@ -54,3 +54,6 @@ do(State) ->
 -spec format_error(any()) ->  iolist().
 format_error(Reason) ->
     io_lib:format("~p", [Reason]).
+
+exc_compile(Opts) ->
+    rebar_api:info("Opts:~p~n~n", [Opts]).
