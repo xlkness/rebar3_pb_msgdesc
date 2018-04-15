@@ -27,7 +27,11 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    AppInfo = rebar_state:current_app(State),
+    AppInfo =
+        case rebar_state:current_app(State) of
+            undefined -> rebar_state:project_apps(State);
+            AppInfo -> AppInfo
+        end,
     Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
     MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
     DescFile = proplists:get_value(desc_file, MsgDescOpts, undefined_file),
