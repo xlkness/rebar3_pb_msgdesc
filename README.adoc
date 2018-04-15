@@ -22,6 +22,12 @@ Configuration in rebar.config
         {out_put_file, "path/to/xxxx_pb_desc.erl"}
     ]}.
 
+    {provider_hooks, [
+        {pre, [
+            {compile, {msgdesc, compile}}
+        ]}
+    ]}.
+
 ### Description file
 Add some protocolbuf descriptions content to a file, format `type_id,type_name,module`, i.e:
 
