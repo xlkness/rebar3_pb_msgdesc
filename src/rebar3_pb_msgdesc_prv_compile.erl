@@ -36,9 +36,8 @@ do(State) ->
 
     [begin
          Opts = rebar_app_info:opts(AppInfo),
-         rebar_api:info("Opts:~p~n~n", [Opts]),
-         OutDir = rebar_app_info:out_dir(AppInfo),
-         rebar_api:info("OutDir:~p~n~n", [OutDir])
+         Opts1 = dict:to_list(Opts),
+         rebar_api:info("Opts:~p~n~n", [Opts1])
 %%         SourceDir = filename:join(rebar_app_info:dir(AppInfo), "exc_files"),
 %%         FoundFiles = rebar_utils:find_files(SourceDir, ".*\\.exc\$"),
 %%
