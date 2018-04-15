@@ -17,10 +17,9 @@ Add the plugin to your rebar config:
 
 Configuration in rebar.config
 
-    {msg_desc, [
+    {msgdesc_opt, [
         {i, "path/to/desc_file"},
-        {out_dir, "path/to/"},
-        {out_file_name, "xxxx_pb_desc"}
+        {out_put_file, "path/to/xxxx_pb_desc.erl"}
     ]}.
 
 ### Description file

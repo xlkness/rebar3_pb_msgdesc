@@ -27,33 +27,64 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    Apps = case rebar_state:current_app(State) of
-               undefined ->
-                   rebar_state:project_apps(State);
-               AppInfo ->
-                   [AppInfo]
-           end,
-
-    [begin
-         Opts = rebar_app_info:opts(AppInfo),
-         SourceDir = filename:join(rebar_app_info:dir(AppInfo), "exc_files"),
-         FoundFiles = rebar_utils:find_files(SourceDir, ".*\\.exc\$"),
-         rebar_api:info("SourceDir:~p~n~n", [SourceDir]),
-         rebar_api:info("FoundFiles:~p~n~n", [FoundFiles]),
-         CompileFun = fun(_Source, Opts1) ->
-             rebar_api:info("_Source:~p~n~n", [_Source]),
-             exc_compile(Opts1)
-                      end,
-
-         rebar_base_compiler:run(Opts, [], FoundFiles, CompileFun)
-     end || AppInfo <- Apps],
-
-
+    AppInfo = rebar_state:current_app(State),
+    Opts = dict:to_list(rebar_app_info:opts(AppInfo)),
+    MsgDescOpts = proplists:get_value(msgdesc_opt, Opts, []),
+    DescFile = proplists:get_value(desc_file, MsgDescOpts, undefined_file),
+    case file:read_file_info(DescFile) of
+        {ok, _} ->
+            DefaultOutputName = filename:basename(DescFile, filename:extension(DescFile))
+                                ++ "_msgdesc.erl",
+            OutputFileName = proplists:get_value(out_put_file, MsgDescOpts, DefaultOutputName),
+            exec_compile(DescFile, OutputFileName);
+        {error, _} ->
+            skip
+    end ,
     {ok, State}.
 
 -spec format_error(any()) ->  iolist().
 format_error(Reason) ->
     io_lib:format("~p", [Reason]).
 
-exc_compile(Opts) ->
-    rebar_api:info("Opts:~p~n~n", [Opts]).
+exec_compile(DescFile, OutputFileName) ->
+    {ok, Lines} = file:read_file(DescFile),
+    {ok, Tokens, _} = rebar3_pb_msgdesc_lexer:string(binary_to_list(Lines)),
+    {ok, OutputList} = rebar3_pb_msgdesc_parser:parse(Tokens),
+    {ok, Fd} = file:open(OutputFileName, [write, binary]),
+    ExchangeFun = fun({MsgType, MsgCode, DecodeFor}, {A, B, C}) ->
+        {Id, Name} = MsgType,
+        {Name, Id} = MsgCode,
+        {Id, Module} = DecodeFor,
+        {A ++ [{Id, list_to_atom(Name)}],
+         B ++ [{list_to_atom(Name), Id}],
+         C ++ [{Id, list_to_atom(Module)}]}
+        end,
+    {MsgTypeList, MsgCodeList, DecodeForList} =
+        lists:foldl(ExchangeFun, {[], [], []}, OutputList),
+    FileModule = filename:basename(OutputFileName, filename:extension(OutputFileName)),
+    io:format(Fd, "-module(" ++ FileModule ++ ")."),
+    io:format(Fd, "-export([msg_type/1])."),
+    io:format(Fd, "-export([msg_code/1])."),
+    io:format(Fd, "-export([decode_for/1])."),
+    OutputMsgTypeFun = fun({Id, Name}) ->
+        String = lists:concat(["msg_type(", Id, ") ->\n\t", Name, ";\n"]),
+        io:format(Fd, String, [])
+                       end,
+    lists:foreach(OutputMsgTypeFun, MsgTypeList),
+    io:format(Fd, "msg_type(Other) -> {error, msgdesc, msg_type, Other}."),
+
+    OutputMsgCodeFun = fun({Name, Id}) ->
+        String = lists:concat(["msg_code(", Name, ") ->\n\t", Id, ";\n"]),
+        io:format(Fd, String, [])
+                       end,
+    lists:foreach(OutputMsgCodeFun, MsgCodeList),
+    io:format(Fd, "msg_code(Other) -> {error, msgdesc, msg_code, Other}."),
+
+    OutputDecodeForFun = fun({Id, Module}) ->
+        String = lists:concat(["decode_for(", Id, ") ->\n\t", Module, ";\n"]),
+        io:format(Fd, String, [])
+                       end,
+    lists:foreach(OutputDecodeForFun, DecodeForList),
+    io:format(Fd, "decode_for(Other) -> {error, msgdesc, decode_for, Other}."),
+
+    ok.
