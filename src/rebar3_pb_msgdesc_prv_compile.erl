@@ -27,7 +27,7 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    rebar_api:info("~w~n", [State]),
+    rebar_api:info("~p~n", [State]),
     {ok, State}.
 
 -spec format_error(any()) ->  iolist().
