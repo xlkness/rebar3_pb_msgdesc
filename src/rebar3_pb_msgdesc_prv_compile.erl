@@ -72,29 +72,29 @@ exec_compile(DescFile, OutputFileName) ->
     rebar_api:info("DecodeForList:~p~n~n", [DecodeForList]),
 
     FileModule = filename:basename(OutputFileName, filename:extension(OutputFileName)),
-    io:format(Fd, "-module(" ++ FileModule ++ ")."),
-    io:format(Fd, "-export([msg_type/1])."),
-    io:format(Fd, "-export([msg_code/1])."),
-    io:format(Fd, "-export([decode_for/1])."),
+    io:format(Fd, "-module(" ++ FileModule ++ ").\n\n", []),
+    io:format(Fd, "-export([msg_type/1]).\n", []),
+    io:format(Fd, "-export([msg_code/1]).\n", []),
+    io:format(Fd, "-export([decode_for/1]).\n\n", []),
     OutputMsgTypeFun = fun({Id, Name}) ->
         String = lists:concat(["msg_type(", Id, ") ->\n\t", Name, ";\n"]),
         io:format(Fd, String, [])
                        end,
     lists:foreach(OutputMsgTypeFun, MsgTypeList),
-    io:format(Fd, "msg_type(Other) -> {error, msgdesc, msg_type, Other}."),
+    io:format(Fd, "msg_type(Other) -> {error, msgdesc, msg_type, Other}.\n\n", []),
 
     OutputMsgCodeFun = fun({Name, Id}) ->
         String = lists:concat(["msg_code(", Name, ") ->\n\t", Id, ";\n"]),
         io:format(Fd, String, [])
                        end,
     lists:foreach(OutputMsgCodeFun, MsgCodeList),
-    io:format(Fd, "msg_code(Other) -> {error, msgdesc, msg_code, Other}."),
+    io:format(Fd, "msg_code(Other) -> {error, msgdesc, msg_code, Other}.\n\n", []),
 
     OutputDecodeForFun = fun({Id, Module}) ->
         String = lists:concat(["decode_for(", Id, ") ->\n\t", Module, ";\n"]),
         io:format(Fd, String, [])
                        end,
     lists:foreach(OutputDecodeForFun, DecodeForList),
-    io:format(Fd, "decode_for(Other) -> {error, msgdesc, decode_for, Other}."),
+    io:format(Fd, "decode_for(Other) -> {error, msgdesc, decode_for, Other}.\n\n", []),
 
     ok.
