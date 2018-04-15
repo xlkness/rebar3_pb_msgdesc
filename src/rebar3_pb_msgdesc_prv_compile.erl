@@ -33,10 +33,20 @@ do(State) ->
                AppInfo ->
                    [AppInfo]
            end,
-    rebar_api:info("apps:~p~n~n", [Apps]),
+
     [begin
          Opts = rebar_app_info:opts(AppInfo),
-         rebar_api:info("Opts:~p~n~n", [Opts])
+         rebar_api:info("Opts:~p~n~n", [Opts]),
+         OutDir = rebar_app_info:out_dir(AppInfo),
+         rebar_api:info("OutDir:~p~n~n", [OutDir])
+%%         SourceDir = filename:join(rebar_app_info:dir(AppInfo), "exc_files"),
+%%         FoundFiles = rebar_utils:find_files(SourceDir, ".*\\.exc\$"),
+%%
+%%         CompileFun = fun(Source, Opts1) ->
+%%             exc_compile(Opts1, Source, OutDir)
+%%                      end,
+
+%%         rebar_base_compiler:run(Opts, [], FoundFiles, CompileFun)
      end || AppInfo <- Apps],
 
 
