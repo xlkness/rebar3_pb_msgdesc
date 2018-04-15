@@ -77,21 +77,21 @@ exec_compile(DescFile, OutputFileName) ->
     io:format(Fd, "-export([msg_code/1]).\n", []),
     io:format(Fd, "-export([decode_for/1]).\n\n", []),
     OutputMsgTypeFun = fun({Id, Name}) ->
-        String = lists:concat(["msg_type(", Id, ") ->\n\t", Name, ";\n"]),
+        String = lists:concat(["msg_type(", Id, ") -> ", Name, ";\n"]),
         io:format(Fd, String, [])
                        end,
     lists:foreach(OutputMsgTypeFun, MsgTypeList),
     io:format(Fd, "msg_type(Other) -> {error, msgdesc, msg_type, Other}.\n\n", []),
 
     OutputMsgCodeFun = fun({Name, Id}) ->
-        String = lists:concat(["msg_code(", Name, ") ->\n\t", Id, ";\n"]),
+        String = lists:concat(["msg_code(", Name, ") -> ", Id, ";\n"]),
         io:format(Fd, String, [])
                        end,
     lists:foreach(OutputMsgCodeFun, MsgCodeList),
     io:format(Fd, "msg_code(Other) -> {error, msgdesc, msg_code, Other}.\n\n", []),
 
     OutputDecodeForFun = fun({Id, Module}) ->
-        String = lists:concat(["decode_for(", Id, ") ->\n\t", Module, ";\n"]),
+        String = lists:concat(["decode_for(", Id, ") -> ", Module, ";\n"]),
         io:format(Fd, String, [])
                        end,
     lists:foreach(OutputDecodeForFun, DecodeForList),
