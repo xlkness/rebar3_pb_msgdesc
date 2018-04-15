@@ -60,9 +60,9 @@ exec_compile(DescFile, OutputFileName) ->
         {Id, Name} = MsgType,
         {Name, Id} = MsgCode,
         {Id, Module} = DecodeFor,
-        {A ++ [{Id, list_to_atom(Name)}],
-         B ++ [{list_to_atom(Name), Id}],
-         C ++ [{Id, list_to_atom(Module)}]}
+        {A ++ [{Id, Name}],
+         B ++ [{Name, Id}],
+         C ++ [{Id, Module}]}
         end,
     {MsgTypeList, MsgCodeList, DecodeForList} =
         lists:foldl(ExchangeFun, {[], [], []}, OutputList),

@@ -12,7 +12,7 @@
 -export([format_error/1]).
 
 %% User code. This is placed here to allow extra attributes.
--file("./rebar3_pb_msgdesc_lexer.xrl", 13).
+-file("./rebar3_pb_msgdesc_lexer.xrl", 16).
 
 drop_tokens(TokenChars) ->
     [Chars] = string:tokens(TokenChars, ","),
@@ -309,36 +309,40 @@ adjust_line(T, A, [_|Cs], L) ->
 %% input.
 
 -file("./rebar3_pb_msgdesc_lexer.erl", 310).
-yystate() -> 3.
+yystate() -> 4.
 
-yystate(6, [C|Ics], Line, Tlen, _, _) when C >= 48, C =< 57 ->
-    yystate(6, Ics, Line, Tlen+1, 0, Tlen);
+yystate(7, [C|Ics], Line, Tlen, _, _) when C >= 48, C =< 57 ->
+    yystate(7, Ics, Line, Tlen+1, 0, Tlen);
+yystate(7, Ics, Line, Tlen, _, _) ->
+    {0,Tlen,Ics,Line,7};
 yystate(6, Ics, Line, Tlen, _, _) ->
-    {0,Tlen,Ics,Line,6};
-yystate(5, Ics, Line, Tlen, _, _) ->
-    {1,Tlen,Ics,Line};
-yystate(4, Ics, Line, Tlen, _, _) ->
+    {3,Tlen,Ics,Line};
+yystate(5, [C|Ics], Line, Tlen, Action, Alen) when C >= 65, C =< 90 ->
+    yystate(1, Ics, Line, Tlen+1, Action, Alen);
+yystate(5, [C|Ics], Line, Tlen, Action, Alen) when C >= 97, C =< 122 ->
+    yystate(1, Ics, Line, Tlen+1, Action, Alen);
+yystate(5, Ics, Line, Tlen, Action, Alen) ->
+    {Action,Alen,Tlen,Ics,Line,5};
+yystate(4, [44|Ics], Line, Tlen, Action, Alen) ->
+    yystate(5, Ics, Line, Tlen+1, Action, Alen);
+yystate(4, [10|Ics], Line, Tlen, Action, Alen) ->
+    yystate(6, Ics, Line+1, Tlen+1, Action, Alen);
+yystate(4, [C|Ics], Line, Tlen, Action, Alen) when C >= 48, C =< 57 ->
+    yystate(7, Ics, Line, Tlen+1, Action, Alen);
+yystate(4, [C|Ics], Line, Tlen, Action, Alen) when C >= 65, C =< 90 ->
+    yystate(0, Ics, Line, Tlen+1, Action, Alen);
+yystate(4, [C|Ics], Line, Tlen, Action, Alen) when C >= 97, C =< 122 ->
+    yystate(0, Ics, Line, Tlen+1, Action, Alen);
+yystate(4, Ics, Line, Tlen, Action, Alen) ->
+    {Action,Alen,Tlen,Ics,Line,4};
+yystate(3, Ics, Line, Tlen, _, _) ->
     {2,Tlen,Ics,Line};
-yystate(3, [44|Ics], Line, Tlen, Action, Alen) ->
-    yystate(2, Ics, Line, Tlen+1, Action, Alen);
-yystate(3, [C|Ics], Line, Tlen, Action, Alen) when C >= 48, C =< 57 ->
-    yystate(6, Ics, Line, Tlen+1, Action, Alen);
-yystate(3, [C|Ics], Line, Tlen, Action, Alen) when C >= 65, C =< 90 ->
-    yystate(0, Ics, Line, Tlen+1, Action, Alen);
-yystate(3, [C|Ics], Line, Tlen, Action, Alen) when C >= 97, C =< 122 ->
-    yystate(0, Ics, Line, Tlen+1, Action, Alen);
-yystate(3, Ics, Line, Tlen, Action, Alen) ->
-    {Action,Alen,Tlen,Ics,Line,3};
-yystate(2, [C|Ics], Line, Tlen, Action, Alen) when C >= 65, C =< 90 ->
-    yystate(1, Ics, Line, Tlen+1, Action, Alen);
-yystate(2, [C|Ics], Line, Tlen, Action, Alen) when C >= 97, C =< 122 ->
-    yystate(1, Ics, Line, Tlen+1, Action, Alen);
-yystate(2, Ics, Line, Tlen, Action, Alen) ->
-    {Action,Alen,Tlen,Ics,Line,2};
+yystate(2, Ics, Line, Tlen, _, _) ->
+    {1,Tlen,Ics,Line};
 yystate(1, [95|Ics], Line, Tlen, Action, Alen) ->
     yystate(1, Ics, Line, Tlen+1, Action, Alen);
 yystate(1, [44|Ics], Line, Tlen, Action, Alen) ->
-    yystate(5, Ics, Line, Tlen+1, Action, Alen);
+    yystate(2, Ics, Line, Tlen+1, Action, Alen);
 yystate(1, [C|Ics], Line, Tlen, Action, Alen) when C >= 48, C =< 57 ->
     yystate(1, Ics, Line, Tlen+1, Action, Alen);
 yystate(1, [C|Ics], Line, Tlen, Action, Alen) when C >= 65, C =< 90 ->
@@ -350,7 +354,7 @@ yystate(1, Ics, Line, Tlen, Action, Alen) ->
 yystate(0, [95|Ics], Line, Tlen, _, _) ->
     yystate(0, Ics, Line, Tlen+1, 2, Tlen);
 yystate(0, [10|Ics], Line, Tlen, _, _) ->
-    yystate(4, Ics, Line+1, Tlen+1, 2, Tlen);
+    yystate(3, Ics, Line+1, Tlen+1, 2, Tlen);
 yystate(0, [C|Ics], Line, Tlen, _, _) when C >= 48, C =< 57 ->
     yystate(0, Ics, Line, Tlen+1, 2, Tlen);
 yystate(0, [C|Ics], Line, Tlen, _, _) when C >= 65, C =< 90 ->
@@ -375,21 +379,28 @@ yyaction(1, TokenLen, YYtcs, TokenLine) ->
 yyaction(2, TokenLen, YYtcs, TokenLine) ->
     TokenChars = yypre(YYtcs, TokenLen),
     yyaction_2(TokenChars, TokenLine);
+yyaction(3, _, _, _) ->
+    yyaction_3();
 yyaction(_, _, _, _) -> error.
 
 -compile({inline,yyaction_0/2}).
--file("./rebar3_pb_msgdesc_lexer.xrl", 7).
+-file("./rebar3_pb_msgdesc_lexer.xrl", 9).
 yyaction_0(TokenChars, TokenLine) ->
      { token, { msg_number, TokenLine, list_to_integer (TokenChars) } } .
 
 -compile({inline,yyaction_1/2}).
--file("./rebar3_pb_msgdesc_lexer.xrl", 8).
+-file("./rebar3_pb_msgdesc_lexer.xrl", 10).
 yyaction_1(TokenChars, TokenLine) ->
      { token, { msg_name, TokenLine, drop_tokens (TokenChars) } } .
 
 -compile({inline,yyaction_2/2}).
--file("./rebar3_pb_msgdesc_lexer.xrl", 9).
+-file("./rebar3_pb_msgdesc_lexer.xrl", 11).
 yyaction_2(TokenChars, TokenLine) ->
      { token, { msg_module, TokenLine, drop_tokens (TokenChars) } } .
+
+-compile({inline,yyaction_3/0}).
+-file("./rebar3_pb_msgdesc_lexer.xrl", 12).
+yyaction_3() ->
+     skip_token .
 
 -file("/usr/local/lib/erlang/lib/erlang/lib/parsetools-2.1.5/include/leexinc.hrl", 309).

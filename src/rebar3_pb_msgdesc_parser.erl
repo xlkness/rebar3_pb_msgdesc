@@ -2,9 +2,9 @@
 -export([parse/1, parse_and_scan/1, format_error/1]).
 -file("rebar3_pb_msgdesc_parser.yrl", 13).
 
-save({number, _, Value}) -> Value;
-save({msg_name, _, Value}) -> Value;
-save({msg_module, _, Value}) -> Value.
+save({msg_number, _, Value}) -> Value;
+save({msg_name, _, Value}) -> list_to_atom(Value);
+save({msg_module, _, Value}) -> list_to_atom(Value).
 -file("/usr/local/lib/erlang/lib/erlang/lib/parsetools-2.1.5/include/yeccpre.hrl", 0).
 %%
 %% %CopyrightBegin%
@@ -199,7 +199,7 @@ yeccpars2(Other, _, _, _, _, _, _) ->
  erlang:error({yecc_bug,"1.4",{missing_state_in_action_table, Other}}).
 
 -dialyzer({nowarn_function, yeccpars2_0/7}).
-yeccpars2_0(S, number, Ss, Stack, T, Ts, Tzr) ->
+yeccpars2_0(S, msg_number, Ss, Stack, T, Ts, Tzr) ->
  yeccpars1(S, 3, Ss, Stack, T, Ts, Tzr);
 yeccpars2_0(_, _, _, _, T, _, _) ->
  yeccerror(T).
@@ -210,7 +210,7 @@ yeccpars2_1(_S, '$end', _Ss, Stack, _T, _Ts, _Tzr) ->
 yeccpars2_1(_, _, _, _, T, _, _) ->
  yeccerror(T).
 
-yeccpars2_2(S, number, Ss, Stack, T, Ts, Tzr) ->
+yeccpars2_2(S, msg_number, Ss, Stack, T, Ts, Tzr) ->
  yeccpars1(S, 3, Ss, Stack, T, Ts, Tzr);
 yeccpars2_2(_S, Cat, Ss, Stack, T, Ts, Tzr) ->
  yeccgoto_combines(hd(Ss), Cat, Ss, Stack, T, Ts, Tzr).
