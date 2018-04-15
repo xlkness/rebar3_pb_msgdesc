@@ -49,3 +49,9 @@ And you can find an `out_file_name` file in the `out_dir`, the content are as fo
 ### Clean
 
     rebar3 msgdesc clean
+
+
+# Note
+A simple plugin, but i use lexer and yecc syntax tool to accomplish. Just for studying.
+
+File `rebar3_pb_msgdesc_lexer.xrl` and `rebar3_pb_msgdesc_parser.yrl` are the most important files.
