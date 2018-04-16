@@ -51,7 +51,7 @@ format_error(Reason) ->
     io_lib:format("~p", [Reason]).
 
 exec_compile(DescFile, OutputFileName) ->
-    rebar_api:info("compiling pb description file"),
+    rebar_api:info("compiling pb description file", []),
     {ok, Lines} = file:read_file(DescFile),
     rebar_api:debug("msgdesc->read lines:~p~n", [Lines]),
     {ok, Tokens, _} = rebar3_pb_msgdesc_lexer:string(binary_to_list(Lines)),
